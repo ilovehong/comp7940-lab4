@@ -9,14 +9,6 @@ import logging
 global redis1
 global chatgpt
 
-def equiped_chatgpt(update, context):
-    global chatgpt
-    reply_message = chatgpt.submit(update.message.text)
-    logging.info("Update: " + str(update))
-    logging.info("Context: " + str(context))
-    context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
-
-
 
 def main():
     # Load your token and create an Updater for your Bot
@@ -45,6 +37,7 @@ def main():
     # On different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("add", add))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("hello", hello_command))
 
     # To start the bot:
     updater.start_polling()
@@ -52,6 +45,13 @@ def main():
 
 def echo(update: Update, context: CallbackContext):
     reply_message = update.message.text.upper()
+    logging.info("Update: " + str(update))
+    logging.info("Context: " + str(context))
+    context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
+
+def equiped_chatgpt(update, context):
+    global chatgpt
+    reply_message = chatgpt.submit(update.message.text)
     logging.info("Update: " + str(update))
     logging.info("Context: " + str(context))
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
@@ -72,6 +72,10 @@ def add(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('You have said ' + msg + ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
+
+def hello_command(update: Update, context: CallbackContext) -> None:
+    name = context.args[0]
+    update.message.reply_text(f'Good day, {name}!')
 
 if __name__ == '__main__':
     main()
